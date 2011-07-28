@@ -2,9 +2,9 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package net.orfjackal.jumi.test;
+package fi.jumi.test;
 
-import net.orfjackal.jumi.launcher.daemon.Daemon;
+import fi.jumi.launcher.daemon.Daemon;
 import org.intellij.lang.annotations.Language;
 import org.junit.*;
 import org.w3c.dom.*;
@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 public class BuildTest {
 
     private static final String POM_FILES = "META-INF/maven/fi.jumi/";
-    private static final String BASE_PACKAGE = "net/orfjackal/jumi/";
+    private static final String BASE_PACKAGE = "fi/jumi/";
     private static final Map<String, List<String>> DEPENDENCIES = new HashMap<String, List<String>>();
 
     static {
