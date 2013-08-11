@@ -1,4 +1,4 @@
-// Copyright © 2011-2013, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2013 Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -18,27 +18,6 @@ import java.util.jar.*;
 import static org.junit.Assert.*;
 
 public class JarUtils {
-
-    public static Iterable<ClassNode> classesIn(final Path jarFile) {
-        return new Iterable<ClassNode>() {
-            @Override
-            public Iterator<ClassNode> iterator() {
-                try {
-                    return new ClassNodeIterator(jarFile);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        };
-    }
-
-    public static void walkZipFile(Path jarFile, SimpleFileVisitor<Path> visitor) throws Exception {
-        URI uri = new URI("jar", jarFile.toUri().toString(), null);
-        HashMap<String, String> env = new HashMap<>();
-        try (FileSystem fs = FileSystems.newFileSystem(uri, env)) {
-            Files.walkFileTree(fs.getPath("/"), visitor);
-        }
-    }
 
     public static Properties getProperties(Path jarFile, String resource) throws IOException {
         URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toUri().toURL()});
@@ -73,6 +52,27 @@ public class JarUtils {
                 return FileVisitResult.CONTINUE;
             }
         });
+    }
+
+    public static Iterable<ClassNode> classesIn(final Path jarFile) {
+        return new Iterable<ClassNode>() {
+            @Override
+            public Iterator<ClassNode> iterator() {
+                try {
+                    return new ClassNodeIterator(jarFile);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+    }
+
+    private static void walkZipFile(Path jarFile, SimpleFileVisitor<Path> visitor) throws Exception {
+        URI uri = new URI("jar", jarFile.toUri().toString(), null);
+        HashMap<String, String> env = new HashMap<>();
+        try (FileSystem fs = FileSystems.newFileSystem(uri, env)) {
+            Files.walkFileTree(fs.getPath("/"), visitor);
+        }
     }
 
     private static boolean isWhitelisted(Path file, List<String> whitelist) {
