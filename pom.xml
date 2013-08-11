@@ -136,17 +136,6 @@
             </plugin>
 
             <plugin>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                    <includes>
-                        <include>**/*Test.class</include>
-                    </includes>
-                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                    <jvm>${env.JAVA6_HOME}/bin/java</jvm>
-                </configuration>
-            </plugin>
-
-            <plugin>
                 <artifactId>maven-source-plugin</artifactId>
                 <executions>
                     <execution>
