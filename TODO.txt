@@ -1,0 +1,2 @@
+
+- upgrade to JUnit 4.12 and remove JarContentAssertionError

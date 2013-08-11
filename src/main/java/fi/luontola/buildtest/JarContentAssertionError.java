@@ -4,6 +4,7 @@
 
 package fi.luontola.buildtest;
 
+// XXX: workaround for https://github.com/junit-team/junit/pull/583
 public class JarContentAssertionError extends AssertionError {
 
     public JarContentAssertionError(String message) {

@@ -38,7 +38,7 @@ public class JarUtilsTest {
         JarUtils.assertContainsOnly(Testing.getDummyJar(), expected);
 
         expected.remove("DummyInterface.class");
-        thrown.expect(JarContentAssertionError.class); // XXX: for some reason test doesn't fail when using AssertionError.class
+        thrown.expect(JarContentAssertionError.class); // XXX: workaround for https://github.com/junit-team/junit/pull/583
         thrown.expectMessage("dummy-1.0.jar contained a not allowed entry: DummyInterface.class");
         JarUtils.assertContainsOnly(Testing.getDummyJar(), expected);
     }
