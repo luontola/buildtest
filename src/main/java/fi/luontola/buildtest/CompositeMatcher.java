@@ -1,4 +1,4 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2013 Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -11,9 +11,9 @@ import java.util.*;
 
 public class CompositeMatcher<T> {
 
-    private final List<Matcher<T>> exclusions = new ArrayList<>();
+    private final List<Matcher<T>> exclusions = new ArrayList<Matcher<T>>();
     private Matcher<T> assertion;
-    private List<String> errorMessages = new ArrayList<>();
+    private List<String> errorMessages = new ArrayList<String>();
     private StackTraceElement[] errorStackTrace;
 
     public CompositeMatcher<T> assertThatIt(Matcher<T> matcher) {

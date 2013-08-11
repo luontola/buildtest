@@ -4,16 +4,15 @@
 
 package fi.luontola.buildtest;
 
-import java.io.IOException;
-import java.nio.file.*;
+import java.io.*;
 import java.util.Properties;
 
 public class Testing {
 
-    public static Path getDummyJar() {
+    public static File getDummyJar() {
         try {
             Properties p = ResourcesUtil.getProperties("testing.properties");
-            return new ProjectArtifacts(Paths.get(p.getProperty("testResourcesDir"))).getProjectJar("dummy");
+            return new ProjectArtifacts(new File(p.getProperty("testResourcesDir"))).getProjectJar("dummy");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -1,4 +1,4 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2013 Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -30,7 +30,7 @@ public class PartiallyParameterized extends Parameterized {
     }
 
     private static List<String> getNonParameterizedMethods(Class<?> klass) {
-        List<String> nonParameterizedMethods = new ArrayList<>();
+        List<String> nonParameterizedMethods = new ArrayList<String>();
         for (Method method : klass.getMethods()) {
             if (method.getAnnotation(NonParameterized.class) != null) {
                 nonParameterizedMethods.add(method.getName());

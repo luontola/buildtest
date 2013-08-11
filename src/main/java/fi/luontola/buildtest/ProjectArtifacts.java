@@ -1,38 +1,33 @@
-// Copyright © 2011-2013, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2013 Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
 package fi.luontola.buildtest;
 
-import com.google.common.collect.Iterables;
-
-import java.io.IOException;
-import java.nio.file.*;
-import java.util.NoSuchElementException;
+import java.io.*;
 
 public class ProjectArtifacts {
 
-    private final Path dir;
+    private final File dir;
 
-    public ProjectArtifacts(Path dir) {
+    public ProjectArtifacts(File dir) {
         this.dir = dir;
     }
 
-    public Path getProjectJar(String artifactId) throws IOException {
-        return getProjectArtifact(artifactId + "-*.jar");
+    public File getProjectJar(String artifactId) throws IOException {
+        return getProjectArtifact(artifactId + "-.*\\.jar");
     }
 
-    public Path getProjectPom(String artifactId) throws IOException {
-        return getProjectArtifact(artifactId + "-*.pom");
+    public File getProjectPom(String artifactId) throws IOException {
+        return getProjectArtifact(artifactId + "-.*\\.pom");
     }
 
-    public Path getProjectArtifact(String glob) throws IOException {
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, glob)) {
-            try {
-                return Iterables.getOnlyElement(stream);
-            } catch (NoSuchElementException | IllegalArgumentException e) {
-                throw new IllegalArgumentException("could not find the artifact " + glob, e);
+    public File getProjectArtifact(String regex) throws IOException {
+        for (File file : dir.listFiles()) {
+            if (file.getName().matches(regex)) {
+                return file;
             }
         }
+        throw new IllegalArgumentException("could not find the artifact " + regex);
     }
 }

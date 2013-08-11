@@ -10,13 +10,12 @@ import org.w3c.dom.*;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.*;
 import javax.xml.xpath.*;
-import java.io.ByteArrayInputStream;
-import java.nio.file.Path;
+import java.io.*;
 
 public class XmlUtils {
 
-    public static Document parseXml(Path file) throws Exception {
-        return newDocumentBuilder().parse(file.toFile());
+    public static Document parseXml(File file) throws Exception {
+        return newDocumentBuilder().parse(file);
     }
 
     public static Document parseXml(String xml) throws Exception {

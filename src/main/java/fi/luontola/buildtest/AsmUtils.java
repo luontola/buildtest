@@ -1,4 +1,4 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2013 Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -23,7 +23,7 @@ public class AsmUtils {
     // checking annotations
 
     public static Matcher<ClassNode> annotatedWithOneOf(final Class<?>... expectedAnnotations) {
-        final List<String> expected = new ArrayList<>();
+        final List<String> expected = new ArrayList<String>();
         for (Class<?> annotation : expectedAnnotations) {
             expected.add(annotation.getName());
         }
@@ -50,7 +50,7 @@ public class AsmUtils {
     }
 
     private static List<String> getAnnotations(ClassNode cn) {
-        List<String> classNames = new ArrayList<>();
+        List<String> classNames = new ArrayList<String>();
         for (AnnotationNode annotation : asAnnotationNodeList(cn.visibleAnnotations)) {
             classNames.add(getClassName(annotation));
         }

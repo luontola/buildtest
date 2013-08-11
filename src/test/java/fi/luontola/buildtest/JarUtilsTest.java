@@ -21,7 +21,7 @@ public class JarUtilsTest {
 
     @Test
     public void can_iterate_all_classes_in_a_JAR() {
-        List<String> classNames = new ArrayList<>();
+        List<String> classNames = new ArrayList<String>();
         for (ClassNode classNode : JarUtils.classesIn(Testing.getDummyJar())) {
             classNames.add(classNode.name);
         }
@@ -32,14 +32,14 @@ public class JarUtilsTest {
 
     @Test
     public void can_test_that_JAR_contains_only_allowed_entries() throws Exception {
-        List<String> expected = new ArrayList<>(asList(
-                "/DummyInterface.class", "/DummyClass.class", "/DummyClass$1.class", "/DummyAbstractClass.class",
-                "/META-INF/maven/", "/META-INF/MANIFEST.MF"));
+        List<String> expected = new ArrayList<String>(asList(
+                "DummyInterface.class", "DummyClass.class", "DummyClass$1.class", "DummyAbstractClass.class",
+                "META-INF/maven/com.example/", "META-INF/MANIFEST.MF"));
         JarUtils.assertContainsOnly(Testing.getDummyJar(), expected);
 
-        expected.remove("/DummyInterface.class");
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("dummy-1.0.jar contained a not allowed entry: /DummyInterface.class");
+        expected.remove("DummyInterface.class");
+        thrown.expect(JarContentAssertionError.class); // XXX: for some reason test doesn't fail when using AssertionError.class
+        thrown.expectMessage("dummy-1.0.jar contained a not allowed entry: DummyInterface.class");
         JarUtils.assertContainsOnly(Testing.getDummyJar(), expected);
     }
 }

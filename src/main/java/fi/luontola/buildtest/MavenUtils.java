@@ -1,4 +1,4 @@
-// Copyright © 2011-2013, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2013 Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -7,12 +7,12 @@ package fi.luontola.buildtest;
 import org.w3c.dom.*;
 
 import javax.xml.xpath.*;
-import java.nio.file.Path;
+import java.io.File;
 import java.util.*;
 
 public class MavenUtils {
 
-    public static List<String> getRuntimeDependencies(Path pomFile) throws Exception {
+    public static List<String> getRuntimeDependencies(File pomFile) throws Exception {
         return getRuntimeDependencies(XmlUtils.parseXml(pomFile));
     }
 
@@ -21,7 +21,7 @@ public class MavenUtils {
                 "/project/dependencies/dependency[not(scope) or scope='compile' or scope='runtime']",
                 pom, XPathConstants.NODESET);
 
-        List<String> results = new ArrayList<>();
+        List<String> results = new ArrayList<String>();
         for (int i = 0; i < nodes.getLength(); i++) {
             Node dependency = nodes.item(i);
 

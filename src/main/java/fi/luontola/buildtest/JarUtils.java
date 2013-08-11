@@ -9,28 +9,30 @@ import org.objectweb.asm.tree.ClassNode;
 
 import java.io.*;
 import java.net.*;
-import java.nio.file.FileSystem;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.jar.*;
+import java.util.zip.ZipEntry;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 public class JarUtils {
 
-    public static Properties getProperties(Path jarFile, String resource) throws IOException {
-        URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toUri().toURL()});
-        try (InputStream in = cl.getResourceAsStream(resource)) {
+    public static Properties getProperties(File jarFile, String resource) {
+        try {
+            URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()});
+            InputStream in = cl.getResourceAsStream(resource);
             assertNotNull("resource not found: " + resource, in);
 
             Properties p = new Properties();
             p.load(in);
+            in.close();
             return p;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public static void checkAllClasses(Path jarFile, CompositeMatcher<ClassNode> matcher) {
+    public static void checkAllClasses(File jarFile, CompositeMatcher<ClassNode> matcher) {
         for (ClassNode classNode : classesIn(jarFile)) {
             matcher.check(classNode);
         }
@@ -43,18 +45,24 @@ public class JarUtils {
         }
     }
 
-    public static void assertContainsOnly(final Path jarFile, final List<String> expected) throws Exception {
-        walkZipFile(jarFile, new SimpleFileVisitor<Path>() {
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                assertTrue(jarFile + " contained a not allowed entry: " + file,
-                        isWhitelisted(file, expected));
-                return FileVisitResult.CONTINUE;
+    public static void assertContainsOnly(final File jarFile, final List<String> expected) throws Exception {
+        JarInputStream in = new JarInputStream(new FileInputStream(jarFile));
+        try {
+            ZipEntry entry;
+            while ((entry = in.getNextEntry()) != null) {
+                if (entry.isDirectory()) {
+                    continue;
+                }
+                if (!isWhitelisted(entry, expected)) {
+                    throw new JarContentAssertionError(jarFile + " contained a not allowed entry: " + entry.getName());
+                }
             }
-        });
+        } finally {
+            in.close();
+        }
     }
 
-    public static Iterable<ClassNode> classesIn(final Path jarFile) {
+    public static Iterable<ClassNode> classesIn(final File jarFile) {
         return new Iterable<ClassNode>() {
             @Override
             public Iterator<ClassNode> iterator() {
@@ -67,20 +75,13 @@ public class JarUtils {
         };
     }
 
-    private static void walkZipFile(Path jarFile, SimpleFileVisitor<Path> visitor) throws Exception {
-        URI uri = new URI("jar", jarFile.toUri().toString(), null);
-        HashMap<String, String> env = new HashMap<>();
-        try (FileSystem fs = FileSystems.newFileSystem(uri, env)) {
-            Files.walkFileTree(fs.getPath("/"), visitor);
-        }
-    }
-
-    private static boolean isWhitelisted(Path file, List<String> whitelist) {
-        boolean allowed = false;
+    private static boolean isWhitelisted(ZipEntry entry, List<String> whitelist) {
         for (String s : whitelist) {
-            allowed |= file.startsWith("/" + s);
+            if (entry.getName().startsWith(s)) {
+                return true;
+            }
         }
-        return allowed;
+        return false;
     }
 
 
@@ -88,10 +89,10 @@ public class JarUtils {
 
         private final JarInputStream in;
 
-        public ClassNodeIterator(Path jarFile) throws IOException {
+        public ClassNodeIterator(File jarFile) throws IOException {
             // TODO: iterate this JAR using FileSystem instead of JarInputStream?
             // http://docs.oracle.com/javase/7/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
-            in = new JarInputStream(Files.newInputStream(jarFile));
+            in = new JarInputStream(new FileInputStream(jarFile));
         }
 
         @Override
