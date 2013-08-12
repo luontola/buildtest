@@ -9,21 +9,34 @@ import org.junit.rules.ExpectedException;
 
 public class DeprecationsTest {
 
+    private static final String LABEL_DEPRECATED_CLASS = DeprecatedClass.class.getName();
+    private static final String LABEL_DEPRECATED_METHOD = HasDeprecatedMethod.class.getName() + "#theMethod(java.lang.String, int)";
+    private static final String LABEL_DEPRECATED_FIELD = HasDeprecatedField.class.getName() + "#theField";
+
     @Rule
     public final ExpectedException thrown = ExpectedException.none().handleAssertionErrors();
 
     private final Deprecations deprecations = new Deprecations();
 
     @Test
-    public void do_nothing_if_nothing_is_actually_nor_expected_to_be_deprecated() {
+    public void it_is_ok_to_have_no_deprecations() {
         deprecations.verify(new StubClasses(RegularClass.class));
+    }
+
+    @Test
+    public void it_is_ok_to_have_expected_deprecations() {
+        deprecations
+                .add(LABEL_DEPRECATED_CLASS)
+                .add(LABEL_DEPRECATED_METHOD)
+                .add(LABEL_DEPRECATED_FIELD);
+        deprecations.verify(new StubClasses(DeprecatedClass.class, HasDeprecatedMethod.class, HasDeprecatedField.class));
     }
 
     @Test
     public void fails_if_class_was_deprecated_without_us_expecting_it() {
         thrown.expect(AssertionError.class);
         thrown.expectMessage("There were unexpected deprecations");
-        thrown.expectMessage(DeprecatedClass.class + " was deprecated");
+        thrown.expectMessage(LABEL_DEPRECATED_CLASS);
         deprecations.verify(new StubClasses(DeprecatedClass.class));
     }
 
@@ -31,7 +44,7 @@ public class DeprecationsTest {
     public void fails_if_method_was_deprecated_without_us_expecting_it() {
         thrown.expect(AssertionError.class);
         thrown.expectMessage("There were unexpected deprecations");
-        thrown.expectMessage("method " + HasDeprecatedMethod.class.getName() + "#theMethod(java.lang.String, int) was deprecated");
+        thrown.expectMessage(LABEL_DEPRECATED_METHOD);
         deprecations.verify(new StubClasses(HasDeprecatedMethod.class));
     }
 
@@ -39,13 +52,30 @@ public class DeprecationsTest {
     public void fails_if_field_was_deprecated_without_us_expecting_it() {
         thrown.expect(AssertionError.class);
         thrown.expectMessage("There were unexpected deprecations");
-        thrown.expectMessage("field " + HasDeprecatedField.class.getName() + "#theField was deprecated");
+        thrown.expectMessage(LABEL_DEPRECATED_FIELD);
         deprecations.verify(new StubClasses(HasDeprecatedField.class));
     }
 
+    @Test
+    public void fails_if_we_expect_something_to_be_deprecated_but_is_not() {
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage("Expected some things to be deprecated by they were not");
+        thrown.expectMessage(LABEL_DEPRECATED_CLASS);
+        deprecations.add(LABEL_DEPRECATED_CLASS);
+        deprecations.verify(new StubClasses());
+    }
+
+    @Test
+    public void reports_multiple_failures_in_a_list_and_ready_to_be_copy_pasted_as_strings() {
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage("\n- \"" + LABEL_DEPRECATED_CLASS + "\"\n");
+        thrown.expectMessage("\n- \"" + LABEL_DEPRECATED_FIELD + "\"\n");
+        deprecations.add(LABEL_DEPRECATED_CLASS)
+                .add(LABEL_DEPRECATED_FIELD);
+        deprecations.verify(new StubClasses());
+    }
+
     // TODO: fails if deprecated thing was removed too late
-    // TODO: fails if deprecated thing was removed too early
-    // TODO: collect multiple failures into one report
 
 
     private static class RegularClass {

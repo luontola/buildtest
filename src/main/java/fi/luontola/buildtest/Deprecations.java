@@ -4,6 +4,7 @@
 
 package fi.luontola.buildtest;
 
+import com.google.common.base.Joiner;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
@@ -13,26 +14,44 @@ public class Deprecations {
 
     private static final Type DEPRECATED = Type.getType(Deprecated.class);
 
+    private final List<String> expectedDeprecations = new ArrayList<String>();
+
+    public Deprecations add(String expectedDeprecation) {
+        this.expectedDeprecations.add(expectedDeprecation);
+        return this;
+    }
+
     public void verify(Iterable<ClassNode> classes) {
+        List<String> actual = findDeprecations(classes);
+        List<String> unexpected = new ArrayList<String>();
+        unexpected.addAll(actual);
+        unexpected.removeAll(expectedDeprecations);
+        assertEmpty("There were unexpected deprecations", unexpected);
+
+        List<String> unaccounted = new ArrayList<String>();
+        unaccounted.addAll(expectedDeprecations);
+        unaccounted.removeAll(actual);
+        assertEmpty("Expected some things to be deprecated by they were not", unaccounted);
+    }
+
+    private List<String> findDeprecations(Iterable<ClassNode> classes) {
+        List<String> deprecations = new ArrayList<String>();
         for (ClassNode clazz : classes) {
             if (isDeprecated(clazz)) {
-                throw new AssertionError("There were unexpected deprecations: " +
-                        "class " + format(clazz) + " was deprecated");
+                deprecations.add(format(clazz));
             }
             for (MethodNode method : clazz.methods) {
                 if (isDeprecated(method)) {
-                    throw new AssertionError("There were unexpected deprecations: " +
-                            "method " + format(clazz, method) + " was deprecated");
-
+                    deprecations.add(format(clazz, method));
                 }
             }
             for (FieldNode field : clazz.fields) {
                 if (isDeprecated(field)) {
-                    throw new AssertionError("There were unexpected deprecations: " +
-                            "field " + format(clazz, field) + " was deprecated");
+                    deprecations.add(format(clazz, field));
                 }
             }
         }
+        return deprecations;
     }
 
     private static boolean isDeprecated(ClassNode clazz) {
@@ -89,5 +108,17 @@ public class Deprecations {
 
     private String format(ClassNode clazz, FieldNode field) {
         return format(clazz) + "#" + field.name;
+    }
+
+    private static void assertEmpty(String message, List<String> actual) {
+        if (!actual.isEmpty()) {
+            throw new AssertionError(message + ":\n" + format(actual));
+        }
+    }
+
+    private static String format(List<String> deprecations) {
+        String prefix = "- \"";
+        String suffix = "\"\n";
+        return prefix + Joiner.on(suffix + prefix).join(deprecations) + suffix;
     }
 }
