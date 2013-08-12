@@ -6,6 +6,16 @@ Utilites for asserting about build artifacts. For usage examples, see
 
 Requires Java 6 or greater.
 
+This project is available in Maven Central using the following dependency:
+
+```
+<dependency>
+    <groupId>fi.luontola.buildtest</groupId>
+    <artifactId>buildtest</artifactId>
+    <version>1.0-SNAPSHOT</version>
+</dependency>
+```
+
 
 Version History
 ---------------
