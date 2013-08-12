@@ -1,2 +1,4 @@
 
 - upgrade to JUnit 4.12 and remove fi.luontola.buildtest.AssertionError
+
+- provide com.google.common.base.Predicate versions of CompositeMatcher, AsmMatchers; we could maybe remove excludeIf and use generic functional transformations?
