@@ -1,2 +1,2 @@
 
-- upgrade to JUnit 4.12 and remove JarContentAssertionError
+- upgrade to JUnit 4.12 and remove fi.luontola.buildtest.AssertionError

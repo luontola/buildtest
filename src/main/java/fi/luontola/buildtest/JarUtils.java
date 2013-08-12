@@ -54,7 +54,7 @@ public class JarUtils {
                     continue;
                 }
                 if (!isWhitelisted(entry, expected)) {
-                    throw new JarContentAssertionError(jarFile + " contained a not allowed entry: " + entry.getName());
+                    throw new AssertionError(jarFile + " contained a not allowed entry: " + entry.getName());
                 }
             }
         } finally {
