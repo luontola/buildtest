@@ -4,34 +4,55 @@
 
 package fi.luontola.buildtest;
 
-import com.google.common.base.Joiner;
+import com.google.common.base.*;
+import com.google.common.collect.Lists;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
+import java.text.*;
 import java.util.*;
 
 public class Deprecations {
 
     private static final Type DEPRECATED = Type.getType(Deprecated.class);
 
-    private final List<String> expectedDeprecations = new ArrayList<String>();
+    private final List<Deprecation> expected = new ArrayList<Deprecation>();
 
-    public Deprecations add(String expectedDeprecation) {
-        this.expectedDeprecations.add(expectedDeprecation);
+    public Deprecations add(String deprecation) {
+        return add(deprecation, formatDate(new Date()), 1);
+    }
+
+    public Deprecations add(String deprecation, String deprecationDate, int transitionPeriodInDays) {
+        Date dateOfRemoval = plusDays(parseDate(deprecationDate), transitionPeriodInDays + 1);
+        expected.add(new Deprecation(deprecation, dateOfRemoval));
         return this;
     }
 
     public void verify(Iterable<ClassNode> classes) {
+        verify(classes, new Date());
+    }
+
+    public void verify(Iterable<ClassNode> classes, Date now) {
+        List<String> expected = Lists.transform(this.expected, Deprecation.GetIdentifier);
+
         List<String> actual = findDeprecations(classes);
         List<String> unexpected = new ArrayList<String>();
         unexpected.addAll(actual);
-        unexpected.removeAll(expectedDeprecations);
+        unexpected.removeAll(expected);
         assertEmpty("There were unexpected deprecations", unexpected);
 
         List<String> unaccounted = new ArrayList<String>();
-        unaccounted.addAll(expectedDeprecations);
+        unaccounted.addAll(expected);
         unaccounted.removeAll(actual);
         assertEmpty("Expected some things to be deprecated by they were not", unaccounted);
+
+        List<String> expired = new ArrayList<String>();
+        for (Deprecation deprecation : this.expected) {
+            if (deprecation.isExpired(now)) {
+                expired.add(deprecation.identifier);
+            }
+        }
+        assertEmpty("It is now time to remove the following deprecated things", expired);
     }
 
     private List<String> findDeprecations(Iterable<ClassNode> classes) {
@@ -120,5 +141,58 @@ public class Deprecations {
         String prefix = "- \"";
         String suffix = "\"\n";
         return prefix + Joiner.on(suffix + prefix).join(deprecations) + suffix;
+    }
+
+
+    // date handling
+
+    private static Date plusDays(Date date, int days) {
+        Calendar tmp = Calendar.getInstance();
+        tmp.setTime(date);
+        tmp.add(Calendar.DAY_OF_MONTH, days);
+        return tmp.getTime();
+    }
+
+    private static String formatDate(Date date) {
+        return isoDate().format(date);
+    }
+
+    private static Date parseDate(String date) {
+        try {
+            return isoDate().parse(date);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static SimpleDateFormat isoDate() {
+        return new SimpleDateFormat("yyyy-MM-dd");
+    }
+
+
+    private static class Deprecation {
+        public static final Function<Deprecation, String> GetIdentifier = new Function<Deprecation, String>() {
+            @Override
+            public String apply(Deprecation input) {
+                return input.identifier;
+            }
+        };
+
+        private final String identifier;
+        private final Date dateOfRemoval;
+
+        private Deprecation(String identifier, Date dateOfRemoval) {
+            this.dateOfRemoval = dateOfRemoval;
+            this.identifier = identifier;
+        }
+
+        public boolean isExpired(Date now) {
+            return now.after(dateOfRemoval);
+        }
+
+        @Override
+        public String toString() {
+            return identifier;
+        }
     }
 }

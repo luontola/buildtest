@@ -7,6 +7,9 @@ package fi.luontola.buildtest;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
+import java.text.*;
+import java.util.Date;
+
 public class DeprecationsTest {
 
     private static final String LABEL_DEPRECATED_CLASS = DeprecatedClass.class.getName();
@@ -33,10 +36,23 @@ public class DeprecationsTest {
     }
 
     @Test
+    public void fails_if_a_deprecation_has_been_around_longer_than_the_transition_period() {
+        deprecations.add(LABEL_DEPRECATED_CLASS, "2000-01-01", 10);
+        deprecations.verify(new StubClasses(DeprecatedClass.class), dateTime("2000-01-11 23:59"));
+
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage("It is now time to remove the following deprecated things");
+        thrown.expectMessage(LABEL_DEPRECATED_CLASS);
+
+        deprecations.verify(new StubClasses(DeprecatedClass.class), dateTime("2000-01-12 00:01"));
+    }
+
+    @Test
     public void fails_if_class_was_deprecated_without_us_expecting_it() {
         thrown.expect(AssertionError.class);
         thrown.expectMessage("There were unexpected deprecations");
         thrown.expectMessage(LABEL_DEPRECATED_CLASS);
+
         deprecations.verify(new StubClasses(DeprecatedClass.class));
     }
 
@@ -45,6 +61,7 @@ public class DeprecationsTest {
         thrown.expect(AssertionError.class);
         thrown.expectMessage("There were unexpected deprecations");
         thrown.expectMessage(LABEL_DEPRECATED_METHOD);
+
         deprecations.verify(new StubClasses(HasDeprecatedMethod.class));
     }
 
@@ -53,6 +70,7 @@ public class DeprecationsTest {
         thrown.expect(AssertionError.class);
         thrown.expectMessage("There were unexpected deprecations");
         thrown.expectMessage(LABEL_DEPRECATED_FIELD);
+
         deprecations.verify(new StubClasses(HasDeprecatedField.class));
     }
 
@@ -61,6 +79,7 @@ public class DeprecationsTest {
         thrown.expect(AssertionError.class);
         thrown.expectMessage("Expected some things to be deprecated by they were not");
         thrown.expectMessage(LABEL_DEPRECATED_CLASS);
+
         deprecations.add(LABEL_DEPRECATED_CLASS);
         deprecations.verify(new StubClasses());
     }
@@ -70,13 +89,20 @@ public class DeprecationsTest {
         thrown.expect(AssertionError.class);
         thrown.expectMessage("\n- \"" + LABEL_DEPRECATED_CLASS + "\"\n");
         thrown.expectMessage("\n- \"" + LABEL_DEPRECATED_FIELD + "\"\n");
+
         deprecations.add(LABEL_DEPRECATED_CLASS)
                 .add(LABEL_DEPRECATED_FIELD);
         deprecations.verify(new StubClasses());
     }
 
-    // TODO: fails if deprecated thing was removed too late
 
+    private Date dateTime(String s) {
+        try {
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(s);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private static class RegularClass {
     }
