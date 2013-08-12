@@ -12,7 +12,7 @@ This project is available in Maven Central using the following dependency:
 <dependency>
     <groupId>fi.luontola.buildtest</groupId>
     <artifactId>buildtest</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
@@ -20,7 +20,7 @@ This project is available in Maven Central using the following dependency:
 Version History
 ---------------
 
-### Next Release
+### BuildTest 1.0.0 (2013-08-13)
 
 Initial release, extracted from [Jumi](http://jumi.fi/)'s build tests.
 Contains the following utilities:
