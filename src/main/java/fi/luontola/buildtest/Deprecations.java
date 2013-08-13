@@ -44,7 +44,7 @@ public class Deprecations {
         List<String> unaccounted = new ArrayList<String>();
         unaccounted.addAll(expected);
         unaccounted.removeAll(actual);
-        assertEmpty("Expected some entities to be deprecated by they were not", unaccounted);
+        assertEmpty("Expected some entities to be deprecated by they were not or have been removed", unaccounted);
 
         List<String> expired = new ArrayList<String>();
         for (Deprecation deprecation : this.expected) {

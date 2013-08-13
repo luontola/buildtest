@@ -77,7 +77,7 @@ public class DeprecationsTest {
     @Test
     public void fails_if_we_expect_something_to_be_deprecated_but_is_not() {
         thrown.expect(AssertionError.class);
-        thrown.expectMessage("Expected some entities to be deprecated by they were not");
+        thrown.expectMessage("Expected some entities to be deprecated by they were not or have been removed");
         thrown.expectMessage(LABEL_DEPRECATED_CLASS);
 
         deprecations.add(LABEL_DEPRECATED_CLASS);
