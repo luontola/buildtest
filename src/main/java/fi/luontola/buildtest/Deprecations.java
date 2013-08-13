@@ -14,6 +14,10 @@ import java.util.*;
 
 public class Deprecations {
 
+    static final String UNEXPECTED_DEPRECATIONS_MESSAGE = "There were unexpected deprecations";
+    static final String MISSING_DEPRECATIONS_MESSAGE = "Expected some entities to be deprecated by they were not or have been removed";
+    static final String EXPIRED_DEPRECATIONS_MESSAGE = "It is now time to remove the following deprecated entities";
+
     private static final Type DEPRECATED = Type.getType(Deprecated.class);
 
     private final List<Deprecation> expected = new ArrayList<Deprecation>();
@@ -34,17 +38,17 @@ public class Deprecations {
 
     public void verify(Iterable<ClassNode> classes, Date now) {
         List<String> expected = Lists.transform(this.expected, Deprecation.GetIdentifier);
-
         List<String> actual = findDeprecations(classes);
+
         List<String> unexpected = new ArrayList<String>();
         unexpected.addAll(actual);
         unexpected.removeAll(expected);
-        assertEmpty("There were unexpected deprecations", unexpected);
+        assertEmpty(UNEXPECTED_DEPRECATIONS_MESSAGE, unexpected);
 
-        List<String> unaccounted = new ArrayList<String>();
-        unaccounted.addAll(expected);
-        unaccounted.removeAll(actual);
-        assertEmpty("Expected some entities to be deprecated by they were not or have been removed", unaccounted);
+        List<String> missing = new ArrayList<String>();
+        missing.addAll(expected);
+        missing.removeAll(actual);
+        assertEmpty(MISSING_DEPRECATIONS_MESSAGE, missing);
 
         List<String> expired = new ArrayList<String>();
         for (Deprecation deprecation : this.expected) {
@@ -52,7 +56,7 @@ public class Deprecations {
                 expired.add(deprecation.identifier);
             }
         }
-        assertEmpty("It is now time to remove the following deprecated entities", expired);
+        assertEmpty(EXPIRED_DEPRECATIONS_MESSAGE, expired);
     }
 
     private List<String> findDeprecations(Iterable<ClassNode> classes) {
