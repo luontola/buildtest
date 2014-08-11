@@ -20,6 +20,10 @@ This project is available in Maven Central using the following dependency:
 Version History
 ---------------
 
+### Upcoming
+
+- Fixed `CompositeMatcher` not reporting all error messages together
+
 ### BuildTest 1.0.0 (2013-08-13)
 
 Initial release, extracted from [Jumi](http://jumi.fi/)'s build tests.
