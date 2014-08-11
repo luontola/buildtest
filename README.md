@@ -12,7 +12,7 @@ This project is available in Maven Central using the following dependency:
 <dependency>
     <groupId>fi.luontola.buildtest</groupId>
     <artifactId>buildtest</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
@@ -20,7 +20,7 @@ This project is available in Maven Central using the following dependency:
 Version History
 ---------------
 
-### Upcoming
+### BuildTest 1.0.1 (2014-08-11)
 
 - Fixed `CompositeMatcher` not reporting all error messages together
 
