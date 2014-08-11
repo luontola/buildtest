@@ -287,10 +287,10 @@
                 <plugin>
                     <groupId>org.sonatype.plugins</groupId>
                     <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>1.4.6</version>
+                    <version>1.5.1</version>
                     <configuration>
                         <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                        <serverId>ossrh-releases</serverId>
+                        <serverId>ossrh-releases-fi.luontola</serverId>
                         <stagingProfileId>21ee1a44511a9d</stagingProfileId>
                     </configuration>
                 </plugin>
