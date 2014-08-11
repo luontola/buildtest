@@ -1,4 +1,4 @@
-// Copyright © 2011-2013 Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2014 Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -35,13 +35,7 @@ public class JarUtils {
         for (ClassNode classNode : classesIn(jarFile)) {
             matcher.check(classNode);
         }
-        try {
-            matcher.rethrowErrors();
-        } catch (AssertionError e) {
-            // XXX: get the parameterized runner improved so that it would be easier to see which of the parameters broke a test
-            System.err.println("Found errors in " + jarFile);
-            throw e;
-        }
+        matcher.rethrowErrors();
     }
 
     public static void assertContainsOnly(final File jarFile, final List<String> expected) throws Exception {
