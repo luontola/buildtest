@@ -25,8 +25,7 @@ function assert-file-contains-substring() {
     cat "$file" | grep --quiet --fixed-strings -e "$expected" || (echo "Error: file $file did not contain $expected"; exit 1)
 }
 
-function set-project-version()
-{
+function set-project-version() {
     local file="pom.xml"
     local version="$1"
     mvn versions:set \
@@ -36,16 +35,14 @@ function set-project-version()
     assert-file-contains-substring "$file" "<version>$version</version>"
 }
 
-function set-documentation-version()
-{
+function set-documentation-version() {
     local file="README.md"
     local version="$1"
     sed -i -r -e "s/^(\\s*<version>).+(<\\/version>)\$/\1$version\2/" "$file"
     assert-file-contains-substring "$file" "<version>$version</version>"
 }
 
-function next-snapshot-version()
-{
+function next-snapshot-version() {
     local prefix=`echo $1 | sed -n -r 's/([0-9]+\.[0-9]+\.)[0-9]+/\1/p'`
     local suffix=`echo $1 | sed -n -r 's/[0-9]+\.[0-9]+\.([0-9]+)/\1/p'`
     ((suffix++))
