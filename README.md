@@ -20,6 +20,11 @@ This project is available in Maven Central using the following dependency:
 Version History
 ---------------
 
+### Upcoming
+
+- Fixed `ProjectArtifacts.getProjectJar` and `getProjectPom` to not match
+  artifacts with the same prefix as the requested artifactId
+
 ### BuildTest 1.0.1 (2014-08-11)
 
 - Fixed `CompositeMatcher` not reporting all error messages together
