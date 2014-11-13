@@ -12,7 +12,7 @@ This project is available in Maven Central using the following dependency:
 <dependency>
     <groupId>fi.luontola.buildtest</groupId>
     <artifactId>buildtest</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 
@@ -20,7 +20,7 @@ This project is available in Maven Central using the following dependency:
 Version History
 ---------------
 
-### Upcoming
+### BuildTest 1.0.2 (2014-11-13)
 
 - Fixed `ProjectArtifacts.getProjectJar` and `getProjectPom` to not match
   artifacts with the same prefix as the requested artifactId

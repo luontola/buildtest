@@ -12,7 +12,7 @@
 
     <groupId>fi.luontola.buildtest</groupId>
     <artifactId>buildtest</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2</version>
     <packaging>jar</packaging>
 
     <description>
